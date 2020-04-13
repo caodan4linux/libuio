@@ -57,12 +57,7 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libuio_la_LIBADD =
-am_libuio_la_OBJECTS = uio_find_devices.lo uio_find_devices_byname.lo \
-	uio_free.lo uio_get_all_info.lo uio_get_device_attributes.lo \
-	uio_get_event_count.lo uio_get_mem_addr.lo uio_get_mem_size.lo \
-	uio_get_name.lo uio_get_version.lo uio_line_from_file.lo \
-	uio_mmap.lo uio_munmap.lo uio_num_from_filename.lo \
-	uio_single_mmap.lo uio_single_munmap.lo
+am_libuio_la_OBJECTS = uio_helper.lo
 libuio_la_OBJECTS = $(am_libuio_la_OBJECTS)
 libuio_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -204,11 +199,7 @@ EXTRA_DIST = libtool-version
 noinst_DATA = libtool-version
 lib_LTLIBRARIES = libuio.la
 include_HEADERS = uio_helper.h
-libuio_la_SOURCES = uio_find_devices.c uio_find_devices_byname.c uio_free.c \
-	uio_get_all_info.c uio_get_device_attributes.c uio_get_event_count.c uio_get_mem_addr.c \
-	uio_get_mem_size.c uio_get_name.c uio_get_version.c uio_helper.h uio_line_from_file.c \
-	uio_mmap.c uio_munmap.c uio_num_from_filename.c uio_single_mmap.c \
-	uio_single_munmap.c
+libuio_la_SOURCES = uio_helper.c
 
 libuio_la_LDFLAGS = -version-info `grep -v '^\#' $(srcdir)/libtool-version`
 AM_CFLAGS = -DUIO_LIB_NAME=\"libuio\" -DUIO_LIB_CUR=`grep -v '^\#' \
@@ -285,22 +276,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_find_devices.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_find_devices_byname.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_free.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_get_all_info.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_get_device_attributes.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_get_event_count.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_get_mem_addr.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_get_mem_size.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_get_name.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_get_version.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_line_from_file.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_mmap.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_munmap.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_num_from_filename.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_single_mmap.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_single_munmap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uio_helper.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
