@@ -28,25 +28,32 @@
 *.so.*
 *.dylib
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+# autoconf generated files
+*.lo
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+config.h
+config.log
+config.status
+
+*.pc
+
+libtool
+
+src/.deps
+src/.libs
+
+Makefile
+
+*.la
+
+stamp-h1
+
+tools/.deps
+tools/.libs
+
+# Compile target executations
+tools/lsuio
+tools/rwuio
+
+tags
