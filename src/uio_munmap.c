@@ -23,7 +23,7 @@
 
 #include "uio_helper.h"
 
-inline void uio_munmap(struct uio_info_t* info)
+void uio_munmap(struct uio_info_t* info)
 {
 	int i;
 	for (i = 0; i < MAX_UIO_MAPS; i++)
