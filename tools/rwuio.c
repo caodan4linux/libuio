@@ -136,7 +136,7 @@ static void uio_read(struct uio_info_t *info)
 					"64 bit access not yet implemented\n");
 			break;
 			case 4:
-				printf("%08lx: %08x\n", addr,
+				printf("%08lx: %08lx\n", addr,
 				       *(volatile unsigned long*)(vp));
 			break;
 			case 2:

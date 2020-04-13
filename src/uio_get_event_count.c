@@ -32,7 +32,7 @@ int uio_get_event_count(struct uio_info_t* info)
 		 "/sys/class/uio/uio%d/event", info->uio_num);
 	FILE* file = fopen(filename,"r");
 	if (!file) return -1;
-	ret = fscanf(file,"%d",&info->event_count);
+	ret = fscanf(file,"%ld",&info->event_count);
 	fclose(file);
 	if (ret<0) return -2;
 	return 0;
