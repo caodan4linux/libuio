@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <getopt.h>
+#include <stdint.h>
 
 #include "system.h"
 #include "uio_helper.h"
@@ -122,6 +123,7 @@ static void uio_read(struct uio_info_t *info)
 {
 	unsigned long addr = info->maps[uio_map].addr + uio_offset;
 	void* vp = info->maps[uio_map].internal_addr + uio_offset;
+
 	if (uio_is_mapped(info))
 		switch (opt_accessbits) {
 			case 8:
@@ -129,17 +131,17 @@ static void uio_read(struct uio_info_t *info)
 					"64 bit access not yet implemented\n");
 			break;
 			case 4:
-				printf("%08lx: %08lx\n", addr,
-				       *(volatile unsigned long*)(vp));
+				printf("0x%lx: 0x%x\n", addr,
+				       *(volatile uint32_t *)(vp));
 			break;
 			case 2:
-				printf("%08lx: %04x\n", addr,
-				       *(volatile unsigned short*)(vp));
+				printf("0x%lx: 0x%hx\n", addr,
+				       *(volatile uint16_t *)(vp));
 			break;
 			case 1:
 			default:
-				printf("%08lx: %02x\n", addr,
-				       *(volatile unsigned char*)(vp));
+				printf("0x%lx: 0x%hhx\n", addr,
+				       *(volatile uint8_t *)(vp));
 			break;
 		}
 
@@ -157,17 +159,17 @@ static void uio_write(struct uio_info_t *info)
 					"64 bit access not yet implemented\n");
 				break;
 			case 4:
-				*(volatile unsigned long*)(vp) = uio_value;
-				printf("%08lx: %08x\n", addr, uio_value);
+				*(uint32_t *)(vp) = uio_value;
+				printf("0x%lx: 0x%x\n", addr, uio_value);
 				break;
 			case 2:
-				*(volatile unsigned short*)(vp) = uio_value;
-				printf("%08lx: %04x\n", addr, uio_value);
+				*(volatile unsigned short*)(vp) = uio_value & 0xffff;
+				printf("0x%lx: 0x%hx\n", addr, uio_value & 0xffff);
 				break;
 			case 1:
 			default:
-				*(volatile unsigned char*)(vp) = uio_value;
-				printf("%08lx: %02x\n", addr, uio_value);
+				*(volatile unsigned char*)(vp) = uio_value & 0xff;
+				printf("0x%lx: 0x%hhx\n", addr, uio_value & 0xff);
 				break;
 		}
 
@@ -193,35 +195,48 @@ static int decode_switches (int argc, char **argv)
 	uio_value = 0;
 
 	while (1) {
-		opt = getopt_long(argc,argv,"1248hm:r:u:vVw:",long_options,&opt_index);
+		opt = getopt_long(argc,argv, "1248hm:r:u:vVw:",
+				long_options, &opt_index);
 		if (opt == EOF)
 			break;
+
 		switch (opt) {
-			case '1' : opt_accessbits = 1;
+		case '1':
+			opt_accessbits = 1;
 			break;
-			case '2' : opt_accessbits = 2;
+		case '2':
+			opt_accessbits = 2;
 			break;
-			case '4' : opt_accessbits = 4;
+		case '4':
+			opt_accessbits = 4;
 			break;
-			case '8' : opt_accessbits = 8;
+		case '8':
+			opt_accessbits = 8;
 			break;
-			case 'm' : uio_map = atoi(optarg);
+		case 'm':
+			uio_map = atoi(optarg);
 			break;
-			case 'r' : opt_read = 1; opt_write = 0;
+		case 'r':
+			opt_read = 1; opt_write = 0;
 			uio_offset = strtoul(optarg, NULL, 0);
 			break;
-			case 'w' : opt_read = 0; opt_write = 1;
+		case 'w':
+			opt_read = 0; opt_write = 1;
 			uio_offset = strtoul(optarg, &pc, 0);
 			if (*pc++==':') uio_value = strtoul(pc, NULL, 0);
 			break;
-			case 'u' : opt_uiodev = 1;
+		case 'u':
+			opt_uiodev = 1;
 			uio_filter = atoi(optarg);
 			break;
-			case 'v' : opt_verbose = 1;
+		case 'v':
+			opt_verbose = 1;
 			break;
-			case 'h' : opt_help = 1;
+		case 'h':
+			opt_help = 1;
 			break;
-			case 'V' : opt_version = 1;
+		case 'V':
+			opt_version = 1;
 			break;
 		}
 	}
