@@ -3,6 +3,7 @@ libuio -- light-wight library to access UIO devices
 
 Copyright (C) 2007 Hans J. Koch
 Copyright (C) 2010 Stephan Linz
+Copyright (C) 2020 Dan.Cao
 
 
 libuio is a light-wight C programming library to handle UIO device
@@ -20,3 +21,14 @@ http://lwn.net/Articles/232575/
 
 Comments are welcome.
 Stephan Linz <linz@li-pro.net>
+
+rwuio example:
+read 32bit value from the map1, read offset=0
+rwuio -m 1 -r 0x0 -4
+read 32bit value from the map1, read offset=0x8
+rwuio -m 1 -r 0x8 -4
+
+write 32bit value 0x1234567 to map1, write offset=0
+rwuio -m 1 -w 0x0:0x12345678 -4
+write 32bit value 0x1234567 to map1, write offset=0x8
+rwuio -m 1 -w 0x8:0x12345678 -4
