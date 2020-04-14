@@ -96,6 +96,8 @@ int main (int argc, char **argv)
 		if (opt_read) uio_read(p);
 		if (opt_write) uio_write(p);
 
+		uio_munmap(p);
+
 		p = p->next;
 	}
 
