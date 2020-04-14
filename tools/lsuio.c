@@ -16,6 +16,7 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <getopt.h>
@@ -30,6 +31,8 @@ static void version (int status);
 char *program_name;
 
 /* Option flags and variables */
+
+
 static struct option const long_options[] =
 {
   {"help", no_argument, 0, 'h'},
@@ -39,6 +42,7 @@ static struct option const long_options[] =
   {"version", no_argument, 0, 'V'},
   {NULL, 0, NULL, 0}
 };
+
 
 int opt_mmap;
 int opt_verbose;
@@ -76,14 +80,7 @@ int main (int argc, char **argv)
 		if (opt_verbose) uio_get_device_attributes(p);
 		if (opt_mmap)
 		{
-			char dev_name[16];
-			int fd;
-			snprintf(dev_name,sizeof(dev_name),
-				 "/dev/uio%d",p->uio_num);
-			fd = open(dev_name,O_RDWR);
-			if (fd>=0)
-				uio_mmap(p,fd);
-			close(fd);
+			uio_mmap(p);
 		}
 		show_uio_info(p);
 		p = p->next;

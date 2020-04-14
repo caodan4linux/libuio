@@ -338,47 +338,61 @@ struct uio_info_t* uio_find_devices_byname(const char *filter_name)
 	return infolist;
 }
 
-void* uio_single_mmap(struct uio_info_t* info, int map_num, int fd)
+static void* uio_single_mmap(struct uio_info_t* info, int map_num)
 {
-	if (!fd) return NULL;
-	info->maps[map_num].mmap_result = UIO_MMAP_NOT_DONE;
-	if (info->maps[map_num].size <= 0) return NULL;
-	info->maps[map_num].mmap_result = UIO_MMAP_FAILED;
-	info->maps[map_num].internal_addr =
-		mmap(
-			NULL,
-			info->maps[map_num].size,
+	char dev_name[16];
+	int fd;
+	void *map_addr;
+
+	if (info->maps[map_num].size <= 0)
+		return NULL;
+
+	snprintf(dev_name, sizeof(dev_name), "/dev/uio%d", info->uio_num);
+
+	fd = open(dev_name, O_RDWR);
+	if (fd < 0)
+		return NULL;
+
+	map_addr = mmap(NULL, info->maps[map_num].size,
 			PROT_READ | PROT_WRITE,
 			MAP_SHARED,
-			fd,
-			map_num*getpagesize()
-		);
-
-	if (info->maps[map_num].internal_addr != MAP_FAILED) {
+			fd, map_num * getpagesize());
+	if (map_addr == MAP_FAILED) {
+		info->maps[map_num].mmap_result = UIO_MMAP_FAILED;
+		info->maps[map_num].internal_addr = NULL;
+	} else {
 		info->maps[map_num].mmap_result = UIO_MMAP_OK;
-		return info->maps[map_num].internal_addr;
+		info->maps[map_num].internal_addr = map_addr;
+
 	}
 
-	return NULL;
+	close(fd);
+	return info->maps[map_num].internal_addr;
 }
 
-void uio_single_munmap(struct uio_info_t* info, int map_num)
+static void uio_single_munmap(struct uio_info_t* info, int map_num)
 {
+	if (info->maps[map_num].internal_addr == NULL)
+		return;
+
 	munmap(info->maps[map_num].internal_addr, info->maps[map_num].size);
+
 	info->maps[map_num].mmap_result = UIO_MMAP_NOT_DONE;
+	info->maps[map_num].internal_addr = NULL;
 }
 
-void uio_mmap(struct uio_info_t* info, int fd)
+void uio_mmap(struct uio_info_t* info)
 {
 	int map_num;
-	if (!fd) return;
+
 	for (map_num= 0; map_num < MAX_UIO_MAPS; map_num++)
-		uio_single_mmap(info, map_num, fd);
+		uio_single_mmap(info, map_num);
 }
 
 void uio_munmap(struct uio_info_t* info)
 {
-	int i;
-	for (i = 0; i < MAX_UIO_MAPS; i++)
-		uio_single_munmap(info, i);
+	int map_num;
+
+	for (map_num = 0; map_num < MAX_UIO_MAPS; map_num++)
+		uio_single_munmap(info, map_num);
 }

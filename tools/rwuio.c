@@ -87,21 +87,14 @@ int main (int argc, char **argv)
 	p = info_list;
 
 	while (p) {
-		char dev_name[16];
-		int fd;
 		uio_get_all_info(p);
 		uio_get_device_attributes(p);
-		snprintf(dev_name,sizeof(dev_name),"/dev/uio%d",p->uio_num);
-		fd = open(dev_name,O_RDWR);
-		if (fd<0) {
-			close(fd);
-			p = p->next;
-			continue;
-		}
-		uio_single_mmap(p,uio_map,fd);
+
+		uio_mmap(p);
+
 		if (opt_read) uio_read(p);
 		if (opt_write) uio_write(p);
-		close(fd);
+
 		p = p->next;
 	}
 
