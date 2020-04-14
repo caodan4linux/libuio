@@ -343,6 +343,7 @@ static void* uio_single_mmap(struct uio_info_t* info, int map_num)
 	char dev_name[16];
 	int fd;
 	void *map_addr;
+	int64_t offset;
 
 	if (info->maps[map_num].size <= 0)
 		return NULL;
@@ -361,9 +362,10 @@ static void* uio_single_mmap(struct uio_info_t* info, int map_num)
 		info->maps[map_num].mmap_result = UIO_MMAP_FAILED;
 		info->maps[map_num].internal_addr = NULL;
 	} else {
-		info->maps[map_num].mmap_result = UIO_MMAP_OK;
-		info->maps[map_num].internal_addr = map_addr;
+		offset = info->maps[map_num].addr & (getpagesize() - 1);
 
+		info->maps[map_num].mmap_result = UIO_MMAP_OK;
+		info->maps[map_num].internal_addr = map_addr + offset;
 	}
 
 	close(fd);
@@ -372,10 +374,15 @@ static void* uio_single_mmap(struct uio_info_t* info, int map_num)
 
 static void uio_single_munmap(struct uio_info_t* info, int map_num)
 {
+	void *map_addr;
+	int64_t offset;
+
 	if (info->maps[map_num].internal_addr == NULL)
 		return;
 
-	munmap(info->maps[map_num].internal_addr, info->maps[map_num].size);
+	offset = info->maps[map_num].addr & (getpagesize() - 1);
+	map_addr = info->maps[map_num].internal_addr - offset;
+	munmap(map_addr, info->maps[map_num].size);
 
 	info->maps[map_num].mmap_result = UIO_MMAP_NOT_DONE;
 	info->maps[map_num].internal_addr = NULL;
