@@ -1,2 +1,11 @@
 *.h linguist-language=C
 *.c linguist-language=C
+*.m4 linguist-language=C
+*.ac linguist-language=C
+*.in linguist-language=C
+*.am linguist-language=C
+*.pc linguist-language=C
+*.pc.in linguist-language=C
+*.sub linguist-language=C
+*.guess linguist-language=C
+*.status linguist-language=C
